@@ -8,7 +8,7 @@ public class PlaneCheck : MonoBehaviour
     private RaycastHit _hit;
 
     [SerializeField]
-    private GameObject _gameObject;
+    private GameObject _stage;
 
     private ARPlaneManager _arplaneManager;
     // Start is called before the first frame update
@@ -23,20 +23,20 @@ public class PlaneCheck : MonoBehaviour
         if (Input.touchCount > 0)
         {
             Touch touch = Input.touches[0];
-            Debug.Log("Sample1");
-                if (touch.phase == TouchPhase.Began)
-                {
-               
-                    var ray = Camera.main.ScreenPointToRay(touch.position);
-                 Debug.Log("Sample2");
+            if (touch.phase == TouchPhase.Began)
+            {
+                var ray = Camera.main.ScreenPointToRay(touch.position);
                 if (Physics.Raycast(ray, out _hit))
-                    {
-                        Instantiate(_gameObject, _hit.transform.position, _hit.transform.rotation);
-                    Debug.Log("Sample3");
-                    Debug.Log("Sample4"+_hit.collider.gameObject.name);
-                    }
+                {
+                    Instantiate(_stage, _hit.transform.position, _hit.transform.rotation);
                 }
-            
+            }
+
+            if(touch.phase == TouchPhase.Moved)
+            {
+                _stage.transform.position = touch.deltaPosition;
+            }
+
         }
 
         /*if(_arplaneManager.trackables.count > 0)

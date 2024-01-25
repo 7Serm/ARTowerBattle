@@ -419,7 +419,6 @@ GameObject:
   - component: {fileID: 2016663347}
   - component: {fileID: 2016663349}
   - component: {fileID: 2016663350}
-  - component: {fileID: 2016663351}
   m_Layer: 0
   m_Name: AR Session Origin
   m_TagString: Untagged
@@ -483,15 +482,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stage: {fileID: 6650338420208224925, guid: 3af1eb99521a1304e8921d1064fec73a, type: 3}
---- !u!114 &2016663351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2016663346}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f30b2deceb574fe4cabe62d11a1b1832, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _towerObj: {fileID: 6765008232537021775, guid: d60c53827f0efd743ad75d60e157e742, type: 3}
+  _smartCamera: {fileID: 2014087809}

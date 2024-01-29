@@ -25,6 +25,8 @@ public class PlaneCheck : MonoBehaviour
 
     private GameObject _stageCash;
     private float _spawnY = 0.5f;
+
+    private new Rigidbody _rigidbody;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +53,7 @@ public class PlaneCheck : MonoBehaviour
                 if (Physics.Raycast(ray, out _hit))
                 {
                     GameObject newgame = Instantiate(_towerObj ,_newSpawPosition,Quaternion.identity);
+                    _rigidbody = newgame.GetComponent<Rigidbody>();
                     _towerlist.Add(newgame);
                     Debug.Log("StartGame");
                 }
@@ -64,6 +67,7 @@ public class PlaneCheck : MonoBehaviour
 
             if(touch.phase == TouchPhase.Ended)
             {
+                _rigidbody.useGravity = true;
                 _towerCount++;
             }
 

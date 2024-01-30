@@ -29,12 +29,14 @@ public class PlaneCheck : MonoBehaviour
 
     bool _stopPobj = true;
 
-    private float _waitTime = 1f; // 待機時間
+    private float _waitTime = 5f; // 待機時間
 
     private float _waitStartTime = 0f;
     private bool _isWaiting = false;
-    private bool _firstloop = true;
-    private int _yPosition;
+
+
+    private float _yPosition = 0.4f;
+    private float _ypositionCash = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -60,26 +62,19 @@ public class PlaneCheck : MonoBehaviour
     /// </summary>
     private void GamePlay()
     {
-        Vector3 _stagePosition = _stageCash.transform.position;
-        Vector3 _newSpawPosition = new(_stagePosition.x, _stagePosition.y + _spawnY+_yPosition, _stagePosition.z);
-        GameObject _gameObject = new();
-        if (_stopPobj)
-        {
-            _gameObject = Instantiate(_towerObj, _newSpawPosition, Quaternion.identity);
-            _towerlist.Add(_gameObject);
-            _rigidbody = _gameObject.GetComponent<Rigidbody>();
-            _stopPobj = false;
-        }
         if (Input.touchCount > 0 && _gameMain)
         {
             Touch touch = Input.touches[0];
             if (touch.phase == TouchPhase.Began)
             {
-                var ray = Camera.main.ScreenPointToRay(touch.position);
-                if (Physics.Raycast(ray, out _hit))
-                {
-                  
-                }
+                Vector3 _stagelocalPosition = _stageCash.transform.position;
+                Vector3 _newSpawPosition = new(_stagelocalPosition.x, _stagelocalPosition.y + _yPosition, _stagelocalPosition.z);
+                GameObject _gameObject = Instantiate(_towerObj, _newSpawPosition, Quaternion.identity);
+                _towerlist.Add(_gameObject);
+                _rigidbody = _gameObject.GetComponent<Rigidbody>();
+                _stopPobj = false;
+                Debug.Log("StartGame" + _stageCash.transform.position+"Stage");
+                Debug.Log("StartGameY" + _newSpawPosition);
             }
 
             if (touch.phase == TouchPhase.Moved)
@@ -91,38 +86,45 @@ public class PlaneCheck : MonoBehaviour
 
             if (touch.phase == TouchPhase.Ended && _gameMain)
             {
+                
                 _rigidbody.useGravity = true;
-                _towerCount++;               
-              //  Debug.Log("StartGame");
-                _isWaiting = true;
+                _towerCount++;
                 _waitStartTime = Time.time;
-                _firstloop = false;
+              
             }
-            if (_isWaiting)
-            {
-                float elapsedTime = Time.time - _waitStartTime;
+            
+            var velo = GetMaxVelocity();
+           /* Debug.Log("StartGameEND"+velo);
+            Debug.Log("StartGameEND" +_towerlist.Count);*/
 
-                if (elapsedTime >= _waitTime)
-                {
-                 //   Debug.Log("StartGame" + _waitTime + " seconds.");
-                    _isWaiting = false;
-                    _stopPobj = true;
-                }
-            }
-            if (!_firstloop && _stopPobj)
+            while (velo > 0.01f)
             {
-                var maxY = (_towerlist.Count > 0) ? _towerlist.Max(a => Mathf.Abs(a.transform.localPosition.y)) : float.MinValue;
-                _yPosition = Mathf.CeilToInt(maxY);
-                Debug.Log("StartGame" + maxY);
+                velo = GetMaxVelocity();
+                Debug.Log("StartGameStop");
             }
+            //   Debug.Log("StartGameEND1" + velo);
+            _yPosition = UpdateMaxY();
+            Debug.Log("StartGameYPOSI" + _yPosition);
+
         }
     }
+    private float UpdateMaxY()
+    {
+        float i = (_towerlist.Count > 0) ? _towerlist.Max(a => Mathf.Abs(a.transform.position.y)) : float.MinValue;
 
+        if (_ypositionCash != _yPosition)
+        {
+            _ypositionCash = _yPosition;
+            Debug.Log("StartGame" + _yPosition+"List");
+        }
+
+        return i;
+    }
     /// <summary>
     /// ゲームをするためのステージの設置場所を決める
     /// </summary>
     private void StageSet()
-    {    
+    {
         if (Input.touchCount > 0 && _setUp)
         {
             Touch touch = Input.touches[0];
@@ -131,23 +133,21 @@ public class PlaneCheck : MonoBehaviour
                 var ray = Camera.main.ScreenPointToRay(touch.position);
                 if (Physics.Raycast(ray, out _hit))
                 {
-                    _stageCash = Instantiate(_stage, _hit.transform.position, _hit.transform.rotation);
+                    _stageCash = Instantiate(_stage, _hit.transform.position, Quaternion.identity);
                 }
             }
             if (touch.phase == TouchPhase.Moved)
             {
-                Vector3 _Vec3StagePosition = _smartCamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000,0,0));
+                Vector3 _Vec3StagePosition = _smartCamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000, 0, 0));
                 _stageCash.transform.localPosition += _Vec3StagePosition;
             }
 
             if (touch.phase == TouchPhase.Ended)
             {
-
-             //   Debug.Log("StartGameStage");
                 _gameMain = true;
                 _setUp = false;
             }
-            
+
         }
     }
 
@@ -167,16 +167,20 @@ public class PlaneCheck : MonoBehaviour
     /// <returns></returns>
     private float GetMaxVelocity()
     {
-        float _magnitude = 0f;
-        foreach(GameObject _veloList in _towerlist)
+        float maxVelocity = 0f;
+        foreach (GameObject tower in _towerlist)
         {
-            var r = _veloList.GetComponent<Rigidbody>();
-            var m = r.velocity.magnitude;
-            if(_magnitude < m)
+            Rigidbody towerRigidbody = tower.GetComponent<Rigidbody>();
+            if (towerRigidbody != null)
             {
-                _magnitude = m;
+                float velocityMagnitude = towerRigidbody.velocity.magnitude;
+                if (velocityMagnitude > maxVelocity)
+                {
+                    maxVelocity = velocityMagnitude;
+                }
             }
         }
-        return _magnitude;
+
+        return maxVelocity;
     }
 }

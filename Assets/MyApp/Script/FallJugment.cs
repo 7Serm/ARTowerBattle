@@ -14,7 +14,7 @@ public class FallJugment : MonoBehaviour
         if(collision.gameObject.CompareTag("towerobj"))
         {
             _falljudg = true;
-            Debug.Log("StartGameOVER");
+         //   Debug.Log("StartGameOVER");
         }
         
     }

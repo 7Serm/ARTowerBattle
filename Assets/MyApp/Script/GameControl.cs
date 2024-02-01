@@ -49,7 +49,6 @@ public class GameControl : MonoBehaviour
                     {
                         Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y+0.3f, _hit.transform.position.z);
                         _stagecash = Instantiate(_stage, _pvector, Quaternion.identity);
-                        fallJugment = _stagecash.GetComponent<FallJugment>();
                     }
                 }
                 if (touch.phase == TouchPhase.Moved)
@@ -66,6 +65,8 @@ public class GameControl : MonoBehaviour
             yield return null;
         }
         planeManager.requestedDetectionMode = PlaneDetectionMode.None;
+        Transform _childtrans = _stagecash.transform.GetChild(1);
+        fallJugment = _childtrans.GetComponent<FallJugment>();
         StartCoroutine(GameMain());
         yield return null;
     }
@@ -78,7 +79,7 @@ public class GameControl : MonoBehaviour
         bool _spawnready = true;
         bool _stopobj = true;
         bool _tapoff = false;
-        while (_gameset)
+        while (!fallJugment.Falljudg)
         {
             Vector3 _stagelocalPosition = _stagecash.transform.localPosition;
             Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon+0.3f, _stagelocalPosition.z);
@@ -136,13 +137,9 @@ public class GameControl : MonoBehaviour
                 _ypositon = yposicash;
             }
             yield return null;
-           /* if (fallJugment.Falljudg)
-            {
-                StartCoroutine(Result());
-            }*/
         }
-        
 
+        StartCoroutine(Result());
          yield return null;
     }
 

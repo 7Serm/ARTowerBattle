@@ -477,7 +477,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016663346}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81c5cb9d4b985ab488a0768c5c67fa9f, type: 3}
   m_Name: 
@@ -492,11 +492,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016663346}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c3932f4f0c02804a9677e4cf991d7ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9edca4eb89137444ea7706b40b21b4be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stage: {fileID: 6650338420208224925, guid: 3af1eb99521a1304e8921d1064fec73a, type: 3}
+  _stage: {fileID: 2011252649205432644, guid: 5925535a8a65b4543bfd0d210e7a304c, type: 3}
   _towerobj: {fileID: 6765008232537021775, guid: d60c53827f0efd743ad75d60e157e742, type: 3}
   _smartcamera: {fileID: 2014087809}
+  planeManager: {fileID: 2016663349}

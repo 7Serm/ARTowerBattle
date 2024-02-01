@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
     {
         yield return  StageSet();
        
-        yield return GameMain(); 
+     //   yield return GameMain(); 
     }
 
 
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
                         _stagecash = Instantiate(_stage, _hit.transform.position, Quaternion.identity);
                     }
                 }
-                if (touch.phase == TouchPhase.Moved)
+               /* if (touch.phase == TouchPhase.Moved)
                 {
                     Vector3 _Vec3StagePosition = _smartcamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000, 0, 0));
                     _stagecash.transform.localPosition += _Vec3StagePosition;
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
                 if (touch.phase == TouchPhase.Ended)
                 {
                      stageset = true;
-                }
+                }*/
 
             }
         }

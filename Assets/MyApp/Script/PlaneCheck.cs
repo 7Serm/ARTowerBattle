@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class PlaneCheck : MonoBehaviour
@@ -35,8 +36,12 @@ public class PlaneCheck : MonoBehaviour
     private bool _isWaiting = false;
 
 
-    private float _yPosition = 0.4f;
+    private float _yPosition = 0f;
     private float _ypositionCash = 0;
+
+    private GameObject _gameobject;
+
+    private bool _setIsntatiatePosi = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -65,23 +70,20 @@ public class PlaneCheck : MonoBehaviour
         if (Input.touchCount > 0 && _gameMain)
         {
             Touch touch = Input.touches[0];
-            if (touch.phase == TouchPhase.Began)
+            if (touch.phase == TouchPhase.Began && _stopPobj && _setIsntatiatePosi)
             {
-                Vector3 _stagelocalPosition = _stageCash.transform.position;
-                Vector3 _newSpawPosition = new(_stagelocalPosition.x, _stagelocalPosition.y + _yPosition, _stagelocalPosition.z);
-                GameObject _gameObject = Instantiate(_towerObj, _newSpawPosition, Quaternion.identity);
-                _towerlist.Add(_gameObject);
-                _rigidbody = _gameObject.GetComponent<Rigidbody>();
+                Vector3 _stagelocalPosition = _stageCash.transform.localPosition;
+                Vector3 _newSpawPosition = new(_stagelocalPosition.x, _stagelocalPosition.y + _yPosition+0.4f, _stagelocalPosition.z);
+                 _gameobject = Instantiate(_towerObj, _newSpawPosition, Quaternion.identity,_stage.transform);
+                _towerlist.Add(_gameobject);
+                _rigidbody = _gameobject.GetComponent<Rigidbody>();
                 _stopPobj = false;
-                Debug.Log("StartGame" + _stageCash.transform.position+"Stage");
-                Debug.Log("StartGameY" + _newSpawPosition);
             }
 
             if (touch.phase == TouchPhase.Moved)
             {
                 Vector3 _vec3MovePosition = _smartCamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000, 0, 0));
-                _towerlist[_towerCount].transform.localPosition += _vec3MovePosition;
-
+                _gameobject.transform.localPosition += _vec3MovePosition;
             }
 
             if (touch.phase == TouchPhase.Ended && _gameMain)
@@ -90,34 +92,47 @@ public class PlaneCheck : MonoBehaviour
                 _rigidbody.useGravity = true;
                 _towerCount++;
                 _waitStartTime = Time.time;
-              
+                 _stopPobj = false;     
+                _setIsntatiatePosi = false;
+                if (_rigidbody.velocity.magnitude > 0.0001)
+                {
+                    Debug.Log("StartGameWhile" + _rigidbody.velocity.magnitude);
+                }
             }
             
+        }
+
+        if (!_stopPobj)
+        {
+            StartCoroutine(WaitTime());
             var velo = GetMaxVelocity();
-           /* Debug.Log("StartGameEND"+velo);
-            Debug.Log("StartGameEND" +_towerlist.Count);*/
-
-            while (velo > 0.01f)
+            if (velo <= 0f)
             {
-                velo = GetMaxVelocity();
-                Debug.Log("StartGameStop");
+                _stopPobj = true;
+                Debug.Log("StartGameStop" + velo);
             }
-            //   Debug.Log("StartGameEND1" + velo);
-            _yPosition = UpdateMaxY();
-            Debug.Log("StartGameYPOSI" + _yPosition);
+        }
+       
 
+        if(_stopPobj && !_setIsntatiatePosi)
+        {
+            
+            float i  = UpdateMaxY();
+            if(i < 0.4f)
+            {
+                _yPosition = i;
+            }
+            Debug.Log("StartGameYposi"+ _yPosition);
+            _setIsntatiatePosi = true;
         }
     }
+
+          
     private float UpdateMaxY()
     {
-        float i = (_towerlist.Count > 0) ? _towerlist.Max(a => Mathf.Abs(a.transform.position.y)) : float.MinValue;
-
-        if (_ypositionCash != _yPosition)
-        {
-            _ypositionCash = _yPosition;
-            Debug.Log("StartGame" + _yPosition+"List");
-        }
-
+        float i = (_towerlist.Count > 0) ? _towerlist.Max(a => Mathf.Abs(a.transform.localPosition.y)) : float.MinValue;
+            _ypositionCash = i;
+            Debug.Log("StartGame" + i +"List"+ _towerlist.Count);      
         return i;
     }
     /// <summary>
@@ -155,9 +170,10 @@ public class PlaneCheck : MonoBehaviour
     /// Žw’èŽžŠÔ‘Ò‚Â
     /// </summary>
     /// <param name="_waitTime">‘Ò‚¿‚½‚¢ŽžŠÔ</param>
-    private IEnumerator WaitTime(float _waitTime)
+    private IEnumerator WaitTime()
     {
-        yield return new WaitForSeconds(_waitTime);
+        yield return null;
+        Debug.Log("StartGameStopCol");
     }
 
 

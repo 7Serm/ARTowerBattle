@@ -82,7 +82,7 @@ public class GameControl : MonoBehaviour
         while (!fallJugment.Falljudg)
         {
             Vector3 _stagelocalPosition = _stagecash.transform.localPosition;
-            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon+0.3f, _stagelocalPosition.z);
+            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon+0.2f, _stagelocalPosition.z);
             if (_spawnready)
             {
              _towerobjcash = Instantiate(_towerobj, _newobjposition, Quaternion.identity,_stagecash.transform);

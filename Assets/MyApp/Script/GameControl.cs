@@ -13,6 +13,8 @@ public class GameControl : MonoBehaviour
     [SerializeField] Camera _smartcamera;
     [SerializeField] ARPlaneManager planeManager;
     [SerializeField] TextMeshProUGUI _scroreUI;
+    [SerializeField] AudioSource _audioSource;
+    [SerializeField] AudioClip _audioClip;
 
     private FallJugment fallJugment;
     private List<GameObject> _towerlist = new();
@@ -20,7 +22,6 @@ public class GameControl : MonoBehaviour
     private GameObject _towerobjcash;
     private int _score = 0;
     bool _stageset = false;
-    bool _gameset = true;
     Rigidbody _rigidbody;
     private void Start()
     {
@@ -81,6 +82,7 @@ public class GameControl : MonoBehaviour
             if (_spawnready)
             {
                 _towerobjcash = Instantiate(_towerobj, _newobjposition, Quaternion.identity, _stagecash.transform);
+                _audioSource.PlayOneShot(_audioClip);
                 _spawnready = false;
                 _stopobj = false;
                 _tapoff = false;

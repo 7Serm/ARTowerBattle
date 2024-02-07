@@ -1,12 +1,9 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.XR.Interaction;
-using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 public class GameControl : MonoBehaviour
@@ -15,15 +12,13 @@ public class GameControl : MonoBehaviour
     [SerializeField] GameObject _towerobj;
     [SerializeField] Camera _smartcamera;
     [SerializeField] ARPlaneManager planeManager;
+    [SerializeField] TextMeshProUGUI _scroreUI;
 
     private FallJugment fallJugment;
     private List<GameObject> _towerlist = new();
     private GameObject _stagecash;
     private GameObject _towerobjcash;
-
- //   Vector3 _newSpawposition;
-  //  GameObject _gameobject;
-
+    private int _score = 0;
     bool _stageset = false;
     bool _gameset = true;
     Rigidbody _rigidbody;
@@ -31,12 +26,12 @@ public class GameControl : MonoBehaviour
     {
         StartCoroutine(StageSet());
     }
-   
+
 
 
 
     IEnumerator StageSet()
-    {     
+    {
         while (!_stageset)
         {
             if (Input.touchCount > 0)
@@ -47,7 +42,7 @@ public class GameControl : MonoBehaviour
                     var ray = Camera.main.ScreenPointToRay(touch.position);
                     if (Physics.Raycast(ray, out RaycastHit _hit))
                     {
-                        Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y+0.3f, _hit.transform.position.z);
+                        Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y + 0.2f, _hit.transform.position.z);
                         _stagecash = Instantiate(_stage, _pvector, Quaternion.identity);
                     }
                 }
@@ -59,7 +54,7 @@ public class GameControl : MonoBehaviour
 
                 if (touch.phase == TouchPhase.Ended)
                 {
-                   _stageset = true;
+                    _stageset = true;
                 }
             }
             yield return null;
@@ -82,65 +77,68 @@ public class GameControl : MonoBehaviour
         while (!fallJugment.Falljudg)
         {
             Vector3 _stagelocalPosition = _stagecash.transform.localPosition;
-            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon+0.2f, _stagelocalPosition.z);
+            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon + 0.2f, _stagelocalPosition.z);
             if (_spawnready)
             {
-             _towerobjcash = Instantiate(_towerobj, _newobjposition, Quaternion.identity,_stagecash.transform);
+                _towerobjcash = Instantiate(_towerobj, _newobjposition, Quaternion.identity, _stagecash.transform);
                 _spawnready = false;
                 _stopobj = false;
                 _tapoff = false;
                 yield return null;
             }
 
-            if(Input.touchCount > 0)
+            if (Input.touchCount > 0)
             {
                 Touch touch = Input.touches[0];
-                if(touch.phase == TouchPhase.Began)
+                if (touch.phase == TouchPhase.Began)
                 {
-                    _rigidbody =  _towerobjcash.GetComponent<Rigidbody>();
+                    _rigidbody = _towerobjcash.GetComponent<Rigidbody>();
                 }
 
-                if(touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Moved)
                 {
                     Vector3 _vec3MovePosition = _smartcamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000, 0, 0));
                     _towerobjcash.transform.localPosition += _vec3MovePosition;
                 }
 
-                if(touch.phase == TouchPhase.Ended)
+                if (touch.phase == TouchPhase.Ended)
                 {
-                     _rigidbody.useGravity = true;
+                    _rigidbody.useGravity = true;
                     _spawnready = true;
                     _towerlist.Add(_towerobjcash);
                     _towerobjcash = null;
                     _tapoff = true;
-
+                    _score++;
                     while (_rigidbody.velocity.magnitude < 0.00001)
                     {
                         yield return null;
                     }
-                    yield return null;                
+                    yield return null;
                 }
             }
 
+
             var objvelo = GetMaxVelocity();
-            while(objvelo > 0.00001)
+            while (objvelo > 0.00001)
             {
                 objvelo = GetMaxVelocity();
-               // Debug.Log("StartGame" + objvelo);
-               _stopobj = true;
+                // Debug.Log("StartGame" + objvelo);
+                _stopobj = true;
                 yield return null;
             }
 
             var yposicash = UpdateMaxY();
-            if(_stopobj && _tapoff)
+            if (_stopobj && _tapoff)
             {
                 _ypositon = yposicash;
             }
+
+          //  _scroreUI.text = _score.ToString();
             yield return null;
         }
 
         StartCoroutine(Result());
-         yield return null;
+        yield return null;
     }
 
 
@@ -152,7 +150,7 @@ public class GameControl : MonoBehaviour
     private float UpdateMaxY()
     {
         float i = (_towerlist.Count > 0) ? _towerlist.Max(a => Mathf.Abs(a.transform.localPosition.y)) : float.MinValue;
-       // Debug.Log("StartGame" + i + "List" + _towerlist.Count);
+        // Debug.Log("StartGame" + i + "List" + _towerlist.Count);
         return i;
     }
 

@@ -127,13 +127,15 @@ public class GameControl : MonoBehaviour
                 yield return null;
             }
 
+            if (fallJugment.Falljudg) break;
+
             var yposicash = UpdateMaxY();
             if (_stopobj && _tapoff)
             {
                 _ypositon = yposicash;
             }
 
-          //  _scroreUI.text = _score.ToString();
+            _scroreUI.text = _score.ToString();
             yield return null;
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 public class GameControl : MonoBehaviour
@@ -12,9 +13,10 @@ public class GameControl : MonoBehaviour
     [SerializeField] GameObject _towerobj;
     [SerializeField] Camera _smartcamera;
     [SerializeField] ARPlaneManager planeManager;
-    [SerializeField] TextMeshProUGUI _scroreUI;
+    [SerializeField] GameObject _uiCanvas;
     [SerializeField] AudioSource _audioSource;
     [SerializeField] AudioClip _audioClip;
+    [SerializeField] GameObject _restartButton;
 
     private FallJugment fallJugment;
     private List<GameObject> _towerlist = new();
@@ -23,6 +25,7 @@ public class GameControl : MonoBehaviour
     private int _score = 0;
     bool _stageset = false;
     Rigidbody _rigidbody;
+    private TextMeshProUGUI _textUI;
     private void Start()
     {
         StartCoroutine(StageSet());
@@ -45,6 +48,8 @@ public class GameControl : MonoBehaviour
                     {
                         Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y + 0.2f, _hit.transform.position.z);
                         _stagecash = Instantiate(_stage, _pvector, Quaternion.identity);
+                        Vector3 _pUIvrctor = new(_stagecash.transform.position.x + -0.5f, _stagecash.transform.position.y + 0.7f, _stagecash.transform.position.z);
+                        Instantiate(_uiCanvas, _pUIvrctor,Quaternion.identity);                     
                     }
                 }
                 if (touch.phase == TouchPhase.Moved)
@@ -56,7 +61,11 @@ public class GameControl : MonoBehaviour
                 if (touch.phase == TouchPhase.Ended)
                 {
                     _stageset = true;
+                    yield return null;
+                    var obj = GameObject.Find("Score");
+                    _textUI = obj.GetComponent<TextMeshProUGUI>();
                 }
+               
             }
             yield return null;
         }
@@ -137,7 +146,7 @@ public class GameControl : MonoBehaviour
                 _ypositon = yposicash;
             }
 
-            _scroreUI.text = _score.ToString();
+            _textUI.text = _score.ToString();
             yield return null;
         }
 
@@ -148,7 +157,7 @@ public class GameControl : MonoBehaviour
 
     IEnumerator Result()
     {
-        Debug.Log("StartGameOVER");
+        _restartButton.SetActive(true);
         yield return null;
     }
     private float UpdateMaxY()

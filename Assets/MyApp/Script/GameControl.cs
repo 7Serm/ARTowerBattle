@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,6 +22,7 @@ public class GameControl : MonoBehaviour
     private FallJugment fallJugment;
     private List<GameObject> _towerlist = new();
     private GameObject _stagecash;
+    private GameObject _canvascash;
     private GameObject _towerobjcash;
     private int _score = 0;
     bool _stageset = false;
@@ -48,14 +50,15 @@ public class GameControl : MonoBehaviour
                     {
                         Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y + 0.2f, _hit.transform.position.z);
                         _stagecash = Instantiate(_stage, _pvector, Quaternion.identity);
-                        Vector3 _pUIvrctor = new(_stagecash.transform.position.x + -0.5f, _stagecash.transform.position.y + 0.7f, _stagecash.transform.position.z);
-                        Instantiate(_uiCanvas, _pUIvrctor,Quaternion.identity);                     
+                        Vector3 _pUIvrctor = new(_stagecash.transform.position.x + -0.3f, _stagecash.transform.position.y + 0.7f, _stagecash.transform.position.z);
+                        _canvascash = Instantiate(_uiCanvas, _pUIvrctor,Quaternion.identity);                     
                     }
                 }
                 if (touch.phase == TouchPhase.Moved)
                 {
                     Vector3 _Vec3StagePosition = _smartcamera.transform.TransformDirection(new Vector3(touch.deltaPosition.x / 1000, 0, 0));
                     _stagecash.transform.localPosition += _Vec3StagePosition;
+                    _canvascash.transform.localPosition += _Vec3StagePosition;
                 }
 
                 if (touch.phase == TouchPhase.Ended)
@@ -127,7 +130,6 @@ public class GameControl : MonoBehaviour
                     yield return null;
                 }
             }
-
 
             var objvelo = GetMaxVelocity();
             while (objvelo > 0.00001)

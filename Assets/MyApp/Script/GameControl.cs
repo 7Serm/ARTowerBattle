@@ -6,12 +6,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 public class GameControl : MonoBehaviour
 {
     [SerializeField] GameObject _stage;
-    [SerializeField] GameObject _towerobj;
+    [SerializeField] List <GameObject> _towerobj;
     [SerializeField] Camera _smartcamera;
     [SerializeField] ARPlaneManager planeManager;
     [SerializeField] GameObject _uiCanvas;
@@ -50,7 +51,7 @@ public class GameControl : MonoBehaviour
                     {
                         Vector3 _pvector = new(_hit.transform.position.x, _hit.transform.position.y + 0.2f, _hit.transform.position.z);
                         _stagecash = Instantiate(_stage, _pvector, Quaternion.identity);
-                        Vector3 _pUIvrctor = new(_stagecash.transform.position.x + -0.3f, _stagecash.transform.position.y + 0.7f, _stagecash.transform.position.z);
+                        Vector3 _pUIvrctor = new(_stagecash.transform.position.x + -0.3f, _stagecash.transform.position.y + 1.2f, _stagecash.transform.position.z);
                         _canvascash = Instantiate(_uiCanvas, _pUIvrctor,Quaternion.identity);                     
                     }
                 }
@@ -87,13 +88,22 @@ public class GameControl : MonoBehaviour
         bool _spawnready = true;
         bool _stopobj = true;
         bool _tapoff = false;
+        Quaternion[] quaternions = new Quaternion[7];
+        quaternions[0] = Quaternion.identity;
+        quaternions[1] = Quaternion.Euler(0, 0, 90);
+        quaternions[2] = Quaternion.Euler(0, 0, 120);
+        quaternions[3] = Quaternion.Euler(0, 0, 210);
+
+        
         while (!fallJugment.Falljudg)
         {
             Vector3 _stagelocalPosition = _stagecash.transform.localPosition;
-            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon + 0.2f, _stagelocalPosition.z);
+            Vector3 _newobjposition = new(_stagelocalPosition.x, _stagelocalPosition.y + _ypositon + 0.4f, _stagelocalPosition.z);
             if (_spawnready)
             {
-                _towerobjcash = Instantiate(_towerobj, _newobjposition, Quaternion.identity, _stagecash.transform);
+                int i = Random.Range(0, 4);
+                int f = Random.Range(0, 4);
+                _towerobjcash = Instantiate(_towerobj[i], _newobjposition, quaternions[f], _stagecash.transform);
                 _audioSource.PlayOneShot(_audioClip);
                 _spawnready = false;
                 _stopobj = false;
